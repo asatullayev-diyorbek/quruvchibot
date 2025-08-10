@@ -1,9 +1,12 @@
 from django.contrib import admin
 from django.contrib.auth.models import User
 from unfold.admin import ModelAdmin, TabularInline
-from bot.models import TgGroup, GroupAdmin, BlockedWord, TgUser, TgInviterUser, ChannelMember, Advertisement, \
-    AdvertisementHistory
+from .models import (
+    TgUser, TgGroup, GroupAdmin, BlockedWord, TgInviterUser,
+    ChannelMember, Advertisement, AdvertisementHistory
+)
 
+# Default User modelini qayta ro'yxatdan chiqarib, custom admin
 admin.site.unregister(User)
 
 @admin.register(User)
@@ -23,28 +26,28 @@ class CustomUserAdmin(ModelAdmin):
 
 @admin.register(TgUser)
 class TgUserAdmin(ModelAdmin):
-    list_display = ('chat_id', 'full_name', 'created_at', 'updated_at')
-    search_fields = ('chat_id', 'full_name', 'created_at')
-    list_filter = ('chat_id', 'full_name', 'created_at')
+    list_display = ('chat_id', 'full_name', 'created_at', 'updated_at', 'is_admin')
+    list_filter = ('is_admin', 'created_at')
+    search_fields = ('chat_id', 'full_name')
+    ordering = ('-created_at',)
     list_per_page = 30
+
 
 class GroupAdminInline(TabularInline):
     model = GroupAdmin
     extra = 0
-    list_display = ("user_full_name", "user_chat_id")
-    readonly_fields = ('user_chat_id', )
+    readonly_fields = ('user_chat_id', 'user_full_name')
 
 
 @admin.register(TgGroup)
 class TgGroupAdmin(ModelAdmin):
-    list_display = ('title', 'chat_id', 'is_admin', 'created_at', 'updated_at')
-    list_filter = ('is_admin', 'created_at', 'updated_at')
+    list_display = ('title', 'chat_id', 'invite_count', 'required_channel_username', 'is_admin', 'created_at')
+    list_filter = ('is_admin', 'created_at')
     search_fields = ('title', 'chat_id')
     ordering = ('-created_at',)
-    readonly_fields = ('chat_id', )
-    list_per_page = 25
-
+    readonly_fields = ('chat_id',)
     inlines = [GroupAdminInline]
+    list_per_page = 25
 
 
 @admin.register(GroupAdmin)
@@ -53,55 +56,29 @@ class GroupAdminAdmin(ModelAdmin):
     list_filter = ("tg_group",)
     search_fields = ("user_full_name", "user_chat_id", "tg_group__title", "tg_group__chat_id")
     ordering = ("tg_group", "user_full_name")
+    readonly_fields = ("tg_group", "user_chat_id")
     list_per_page = 25
-
-    readonly_fields = ("tg_group", "user_chat_id", )
-
-    fieldsets = (
-        ("Admin haqida", {
-            "fields": ("user_full_name", "user_chat_id")
-        }),
-        ("Guruh haqida", {
-            "fields": ("tg_group",)
-        }),
-    )
 
 
 @admin.register(BlockedWord)
 class BlockedWordAdmin(ModelAdmin):
     list_display = ('word', 'created_at', 'updated_at')
-    ordering = ('-created_at', )
+    ordering = ('-created_at',)
     list_per_page = 30
 
 
 @admin.register(TgInviterUser)
 class TgInviterUserAdmin(ModelAdmin):
     list_display = (
-        "tg_group",
-        "inviter_full_name",
-        "inviter_chat_id",
-        "invite_count",
-        "last_invite_at",
-        "is_allow",
-        "created_at",
-        "updated_at",
+        "tg_group", "inviter_full_name", "inviter_chat_id",
+        "invite_count", "last_invite_at", "is_allow",
+        "created_at", "updated_at"
     )
     list_filter = ("tg_group", "is_allow", "created_at")
     search_fields = ("inviter_full_name", "inviter_chat_id")
     ordering = ("-invite_count", "-last_invite_at")
     readonly_fields = ("created_at", "updated_at")
-
-    fieldsets = (
-        ("Foydalanuvchi ma'lumotlari", {
-            "fields": ("tg_group", "inviter_full_name", "inviter_chat_id")
-        }),
-        ("Statistika", {
-            "fields": ("invite_count", "last_invite_at", "is_allow")
-        }),
-        ("Vaqt ma'lumotlari", {
-            "fields": ("created_at", "updated_at")
-        }),
-    )
+    list_per_page = 30
 
 
 @admin.register(ChannelMember)
@@ -111,27 +88,36 @@ class ChannelMemberAdmin(ModelAdmin):
     list_filter = ("channel_id",)
     ordering = ("-joined_at",)
     readonly_fields = ("joined_at",)
+    list_per_page = 30
 
 
 class AdvertisementHistoryInline(TabularInline):
     model = AdvertisementHistory
     extra = 0
     readonly_fields = ("chat_id", "title", "is_success", "description")
-    can_delete = True
+    can_delete = False
     show_change_link = False
-    per_page = 5  # faqat Django 5.0+ da ishlaydi
+
 
 @admin.register(Advertisement)
 class AdvertisementAdmin(ModelAdmin):
-    list_display = ("id", "forward_from_chat_id", "forward_message_id", "get_target_type_display", "created_by", "created_at", "is_sent")
-    list_display_links = ('id', "forward_from_chat_id", "forward_message_id", "get_target_type_display")
+    list_display = (
+        "id", "forward_from_chat_id", "forward_message_id",
+        "target_type", "created_by", "created_at", "is_sent",
+        "success", "error"
+    )
     list_filter = ("target_type", "is_sent", "created_at")
     search_fields = ("created_by",)
     ordering = ("-created_at",)
-    readonly_fields = ("created_at",)
-
+    readonly_fields = ("created_at", "success", "error")
     inlines = [AdvertisementHistoryInline]
+    list_per_page = 25
 
-    def get_target_type_display(self, obj):
-        return obj.get_target_type_display()
-    get_target_type_display.short_description = "Target turi"
+
+@admin.register(AdvertisementHistory)
+class AdvertisementHistoryAdmin(ModelAdmin):
+    list_display = ("advertisement", "chat_id", "title", "is_success", "description")
+    list_filter = ("is_success",)
+    search_fields = ("title", "chat_id")
+    ordering = ("-advertisement",)
+    list_per_page = 30
