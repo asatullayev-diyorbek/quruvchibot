@@ -6,7 +6,7 @@ class TgUser(models.Model):
     full_name = models.CharField(max_length=256, verbose_name="To'liq ism")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Qo'shilgan vaqti")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Yangilangan vaqti")
-    is_admin = models.BooleanField(default=False, null=True, blank=True, verbose_name="Bot adminimi?")
+    is_admin = models.BooleanField(default=False, verbose_name="Bot adminimi?")
 
     def __str__(self):
         return f"{self.full_name} ({self.chat_id})"
