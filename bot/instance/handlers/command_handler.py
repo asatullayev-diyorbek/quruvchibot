@@ -257,21 +257,25 @@ async def web_panel(message: Message, bot: Bot):
     if not await is_bot_admin(message.from_user.id):
         return
 
-    from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+    from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
 
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="🚀 Panelga o‘tish", url="https://quruvchibot.asatullayev.uz")]
+        [InlineKeyboardButton(
+            text="🚀 Panelga o‘tish",
+            web_app=WebAppInfo(url="https://quruvchibot.asatullayev.uz")
+        )]
     ])
 
     await message.answer(
         text=(
             "👋 *Xush kelibsiz!*\n\n"
             "📊 Sizning shaxsiy *Admin Panelingiz* tayyor.\n"
-            "Quyidagi tugmani bosib, barcha imkoniyatlardan foydalanishingiz mumkin:\n\n"
+            "Quyidagi tugma orqali panelni *bot ichida* ochishingiz mumkin:\n\n"
             "✨ Ishlaringizga omad va samarali boshqaruv tilaymiz!"
         ),
         parse_mode="Markdown",
         reply_markup=keyboard
     )
+
 
 
