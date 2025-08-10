@@ -27,7 +27,6 @@ Man ishlashim uchun guruhizga qoshib admin berishiz kerak😄
 
 
 async def handle_start(message: Message, bot: Bot) -> None:
-    await message.answer(f"ChatID: {message.chat.id}")
     # Private chat bo'lsa, foydalanuvchini bazaga yozamiz
     if message.chat.type == "private":
         await sync_to_async(TgUser.objects.get_or_create)(
