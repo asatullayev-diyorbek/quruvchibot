@@ -2,7 +2,7 @@ from datetime import datetime
 
 from aiogram import types
 from asgiref.sync import sync_to_async
-from bot.models import Advertisement, TgInviterUser
+from bot.models import Advertisement
 
 
 @sync_to_async

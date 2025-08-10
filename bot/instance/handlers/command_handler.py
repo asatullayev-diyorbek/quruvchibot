@@ -102,6 +102,13 @@ def disable_required_channel(chat_id: int):
     group.save()
     return group
 
+@sync_to_async
+def is_bot_admin(chat_id: int) -> bool:
+    return TgUser.objects.filter(
+        chat_id=chat_id,
+        is_admin=True
+    ).exists()
+
 # /majbur 10
 async def cmd_set_invite_count(message: Message, bot: Bot):
     await delete_message(message, bot)
@@ -247,7 +254,16 @@ async def web_panel(message: Message, bot: Bot):
     if not message.chat.type in ['private']:
         return
 
-    if not await is_group_admin(message.chat.id, message.from_user.id):
+    if not await is_bot_admin(message.from_user.id):
         return
 
-    await message.answer("panel...")
+    await message.answer(
+        text=(
+            "📊 * Panelga o‘ting*\n\n"
+            "Sizning shaxsiy *admin panelingiz* tayyor bo‘ldi. Iltimos, quyidagi tugmani bosib kirishingiz mumkin:\n\n"
+            "🔗 [Panelga o‘tish](https://quruvchibot.asatullayev.uz)\n\n"
+            "_Agar havola ochilmasa, botni bloklamaganligingizni, tarmoq holatini tekshiring yoki qayta urinib ko‘ring._"
+        ),
+        parse_mode="Markdown",
+        disable_web_page_preview=True
+    )
