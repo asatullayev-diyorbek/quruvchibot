@@ -127,6 +127,10 @@ class Advertisement(models.Model):
     def __str__(self):
         return f"{self.get_target_type_display()} reklama ({self.created_at:%Y-%m-%d %H:%M})"
 
+    class Meta:
+        verbose_name = "Reklama"
+        verbose_name_plural = "Reklamalar"
+
 
 class AdvertisementHistory(models.Model):
     advertisement = models.ForeignKey(Advertisement, on_delete=models.CASCADE, verbose_name="Reklama")
@@ -137,3 +141,7 @@ class AdvertisementHistory(models.Model):
 
     def __str__(self):
         return f"{self.title} ({self.chat_id} - {self.advertisement}"
+
+    class Meta:
+        verbose_name = "Reklama tarixi"
+        verbose_name_plural = "Reklamalar tarixi"
