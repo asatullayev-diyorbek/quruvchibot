@@ -4,7 +4,7 @@ from aiogram.filters import CommandStart, Command
 from bot.instance.handlers.callback import process_ad_target, cancel_ad, process_allow_inviter
 from bot.instance.handlers.chat_member import handle_new_member
 from bot.instance.handlers.command_handler import handle_start, handle_help, cmd_set_invite_count, \
-    cmd_set_required_channel, cmd_disable_invite_count, cmd_disable_required_channel
+    cmd_set_required_channel, cmd_disable_invite_count, cmd_disable_required_channel, web_panel
 from bot.instance.handlers.messages import group_message_filter
 from bot.instance.handlers.my_chat_member import handler_my_chat_member
 
@@ -15,6 +15,7 @@ webhook_dp.message.register(cmd_set_invite_count, Command('majbur'))
 webhook_dp.message.register(cmd_disable_invite_count, Command('majburoff'))
 webhook_dp.message.register(cmd_set_required_channel, Command('kanal'))
 webhook_dp.message.register(cmd_disable_required_channel, Command('kanaloff'))
+webhook_dp.message.register(web_panel, Command('panel'))
 webhook_dp.message.register(group_message_filter)  # barcha xabarlar
 
 webhook_dp.my_chat_member.register(handler_my_chat_member)

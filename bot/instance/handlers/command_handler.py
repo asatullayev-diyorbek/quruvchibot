@@ -241,3 +241,13 @@ async def cmd_disable_required_channel(message: Message, bot: Bot):
     group = await disable_required_channel(message.chat.id)
     await message.answer("✅ Kanalga majburiy a‘zo bo‘lish talabi o‘chirildi.", parse_mode="HTML")
 
+
+async def web_panel(message: Message, bot: Bot):
+    await delete_message(message, bot)
+    if not message.chat.type in ['private']:
+        return
+
+    if not await is_group_admin(message.chat.id, message.from_user.id):
+        return
+
+    await message.answer("panel...")
